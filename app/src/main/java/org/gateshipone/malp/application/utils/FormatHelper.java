@@ -27,6 +27,9 @@ import android.content.Context;
 
 import org.gateshipone.malp.R;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -197,9 +200,7 @@ public class FormatHelper {
         StringBuilder resultStr = new StringBuilder();
         for (char ch : input.toCharArray()) {
             if (unsafeCharacter(ch)) {
-                resultStr.append('%');
-                resultStr.append(characterToHex(ch / 16));
-                resultStr.append(characterToHex(ch % 16));
+                resultStr.append(charToUrlHexString(ch));
             } else {
                 resultStr.append(ch);
             }
@@ -207,8 +208,43 @@ public class FormatHelper {
         return resultStr.toString();
     }
 
-    private static char characterToHex(int ch) {
-        return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
+    /**
+     * Convert char to hex representation in %XY format
+     * @param ch char
+     * @return String with hex representation of char
+     */
+    public static String charToUrlHexString(char ch){
+        String strChar;
+        String strBytes;
+        Boolean bTrim=true;
+
+        //Get string from char
+        strChar = String.valueOf(ch);
+        try {
+            //Get string of a four byte hex value representing the char
+            strBytes = String.format( "%08X", new BigInteger(1, strChar.getBytes("UTF8")));
+        }
+        catch (UnsupportedEncodingException  e) {
+            //FIXME do some nice exception handling here
+            return "";
+        }
+
+        //Ensure result has even number of chars
+        if ((strBytes.length() % 2 != 0) || strBytes.length()==0) {
+            return "";
+        }
+
+        StringBuilder resultStr = new StringBuilder();
+        //Insert some "%"s to fit Url encoding
+        for (int i = 0; i< strBytes.length(); i+=2){
+            if (!strBytes.substring(i,i+2).equals("00") || !bTrim){      //Skip leading "00"s
+                bTrim = false;
+                resultStr.append('%');
+                resultStr.append(strBytes.substring(i, i + 2));
+            }
+        }
+
+        return resultStr.toString();
     }
 
     private static boolean unsafeCharacter(char ch) {

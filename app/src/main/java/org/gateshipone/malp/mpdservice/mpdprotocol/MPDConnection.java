@@ -596,7 +596,12 @@ public class MPDConnection {
 
         // This waits until the server sends a response (OK,ACK(failure) or the requested data)
         try {
-            waitForResponse();
+            // Wait five times longer if 'MPD_COMMAND_REQUEST_ALL_FILES' is executed
+            if (command == MPDCommands.MPD_COMMAND_REQUEST_ALL_FILES) {
+                waitForResponse(RESPONSE_TIMEOUT * 5);
+            } else {
+                waitForResponse();
+            }
         } catch (IOException e) {
             handleSocketError();
             mConnectionLock.release();
@@ -805,7 +810,7 @@ public class MPDConnection {
      * Function only actively waits for reader to get ready for
      * the response.
      */
-    private void waitForResponse() throws IOException {
+    private void waitForResponse(long timeout) throws IOException {
         if (DEBUG_ENABLED) {
             Log.v(TAG, "Waiting for response");
         }
@@ -815,7 +820,7 @@ public class MPDConnection {
             while (!readyRead()) {
                 long compareTime = System.nanoTime() - currentTime;
                 // Terminate waiting after waiting to long. This indicates that the server is not responding
-                if (compareTime > RESPONSE_TIMEOUT) {
+                if (compareTime > timeout) {
                     if (DEBUG_ENABLED) {
                         Log.v(TAG, "Stuck waiting for server response");
                     }
@@ -832,6 +837,11 @@ public class MPDConnection {
         if(mConnectionState != CONNECTION_STATES.CONNECTING) {
             changeState(CONNECTION_STATES.RECEIVING);
         }
+    }
+
+    // Use default value for "timeout" if it is not specified
+    private void waitForResponse() throws IOException {
+        waitForResponse(RESPONSE_TIMEOUT);
     }
 
     /**
