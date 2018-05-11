@@ -76,12 +76,27 @@
             android:persistent="true"
             android:summary="@string/preference_use_tags_in_filebrowser_text"
             android:title="@string/preference_use_tags_in_filebrowser_title" />
+        <ListPreference
+            android:defaultValue="@string/pref_library_click_action_default"
+            android:dialogTitle="@string/preference_library_click_action_title"
+            android:entries="@array/preference_library_click"
+            android:entryValues="@array/preference_library_click_action_values"
+            android:key="@string/pref_library_click_action_key"
+            android:persistent="true"
+            android:summary="@string/preference_library_click_action_message"
+            android:title="@string/preference_library_click_action_summary" />
         <CheckBoxPreference
             android:defaultValue="@bool/pref_use_album_artists_default"
             android:key="@string/pref_use_album_artists_key"
             android:persistent="true"
             android:summary="@string/preference_use_album_artists_text"
             android:title="@string/preference_use_album_artists_title" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_use_artist_sort_default"
+            android:key="@string/pref_use_artist_sort_key"
+            android:persistent="true"
+            android:summary="@string/preference_use_artist_sort_text"
+            android:title="@string/preference_use_artist_sort_title" />
         <CheckBoxPreference
             android:defaultValue="@bool/pref_show_playlist_sections_default"
             android:key="@string/pref_show_playlist_sections_key"
@@ -95,6 +110,12 @@
             android:key="@string/pref_show_notification_key"
             android:summary="@string/preference_show_notification_text"
             android:title="@string/preference_show_notification_title" />
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_keep_display_on_default"
+            android:key="@string/pref_keep_display_on_key"
+            android:persistent="true"
+            android:summary="@string/preference_generic_keep_display_on_text"
+            android:title="@string/preference_generic_keep_display_on_title" />
         <ListPreference
             android:defaultValue="@string/pref_volume_control_view_default"
             android:dialogTitle="@string/preference_volume_control_message"
@@ -110,6 +131,10 @@
             android:persistent="true"
             android:summary="@string/preference_generic_hardware_keys_text"
             android:title="@string/preference_generic_hardware_keys_title" />
+        <Preference
+            android:key="@string/pref_volume_steps_dialog_key"
+            android:title="@string/preference_volume_step_title"
+            android:summary="@string/preference_volume_step_text"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preference_category_other">
         <CheckBoxPreference
@@ -120,11 +145,5 @@
         <Preference
             android:key="@string/pref_artwork_settings_key"
             android:title="@string/artwork_settings" />
-        <Preference android:title="@string/preference_launch_about">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:targetClass="org.gateshipone.malp.application.activities.AboutActivity"
-                android:targetPackage="org.gateshipone.malp" />
-        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

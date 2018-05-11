@@ -26,6 +26,7 @@ package org.gateshipone.malp.application.loaders;
 import android.content.Context;
 import android.support.v4.content.Loader;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import org.gateshipone.malp.mpdservice.handlers.serverhandler.MPDQueryHandler;
@@ -39,18 +40,29 @@ public class ArtistsLoader extends Loader<List<MPDArtist>> {
 
     private boolean mUseAlbumArtists;
 
-    public ArtistsLoader(Context context, boolean useAlbumArtists) {
+    private boolean mUseArtistSort;
+
+    public ArtistsLoader(Context context, boolean useAlbumArtists, boolean useArtistSort) {
         super(context);
         mUseAlbumArtists = useAlbumArtists;
-        pArtistResponseHandler = new ArtistResponseHandler();
+        mUseArtistSort = useArtistSort;
+        pArtistResponseHandler = new ArtistResponseHandler(this);
     }
 
 
-    private class ArtistResponseHandler extends MPDResponseArtistList {
+    private static class ArtistResponseHandler extends MPDResponseArtistList {
+        private WeakReference<ArtistsLoader> mArtistsLoader;
+
+        private ArtistResponseHandler(ArtistsLoader loader) {
+            mArtistsLoader = new WeakReference<>(loader);
+        }
 
         @Override
         public void handleArtists(List<MPDArtist> artistList) {
-            deliverResult(artistList);
+            ArtistsLoader loader = mArtistsLoader.get();
+            if (loader != null) {
+                loader.deliverResult(artistList);
+            }
         }
     }
 
@@ -68,9 +80,17 @@ public class ArtistsLoader extends Loader<List<MPDArtist>> {
     @Override
     public void onForceLoad() {
         if( !mUseAlbumArtists) {
-            MPDQueryHandler.getArtists(pArtistResponseHandler);
+            if(!mUseArtistSort) {
+                MPDQueryHandler.getArtists(pArtistResponseHandler);
+            } else {
+                MPDQueryHandler.getArtistSort(pArtistResponseHandler);
+            }
         } else {
-            MPDQueryHandler.getAlbumArtists(pArtistResponseHandler);
+            if(!mUseArtistSort) {
+                MPDQueryHandler.getAlbumArtists(pArtistResponseHandler);
+            } else {
+                MPDQueryHandler.getAlbumArtistSort(pArtistResponseHandler);
+            }
         }
     }
 }

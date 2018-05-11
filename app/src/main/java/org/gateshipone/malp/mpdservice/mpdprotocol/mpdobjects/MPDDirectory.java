@@ -23,21 +23,21 @@
 package org.gateshipone.malp.mpdservice.mpdprotocol.mpdobjects;
 
 
+import android.support.annotation.NonNull;
+
 public class MPDDirectory extends MPDFileEntry implements MPDGenericItem {
 
-    public MPDDirectory(String path) {
+    public MPDDirectory(@NonNull String path) {
         super(path);
     }
 
     @Override
+    @NonNull
     public String getSectionTitle() {
         return mPath.substring(mPath.lastIndexOf('/') + 1);
     }
 
-    public int compareTo(MPDDirectory another) {
-        if ( another == null ) {
-            return -1;
-        }
+    public int compareTo(@NonNull MPDDirectory another) {
         return getSectionTitle().toLowerCase().compareTo(another.getSectionTitle().toLowerCase());
     }
 }
